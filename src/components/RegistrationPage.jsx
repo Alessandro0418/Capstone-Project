@@ -1,4 +1,4 @@
-import { Form, Button, Container, Alert } from "react-bootstrap";
+import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -9,8 +9,9 @@ function RegistrationPage() {
     username: "",
     email: "",
     password: "",
-    name: "",
+    nome: "",
     cognome: "",
+    avatar: "",
   });
 
   const [error, setError] = useState(null);
@@ -26,7 +27,7 @@ function RegistrationPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3001/auth/register", formData); // aggiorna la porta se diversa
+      await axios.post("http://localhost:8080/auth/register", formData); // aggiorna la porta se diversa
       navigate("/login");
     } catch (err) {
       console.error(err);
@@ -34,7 +35,102 @@ function RegistrationPage() {
     }
   };
 
-  return <Container></Container>;
+  return (
+    <Container
+      fluid
+      className="min-vh-100 d-flex justify-content-center align-items-center bg-registration"
+    >
+      <Row className="w-100 justify-content-center">
+        <Col xs={11} sm={8} md={6} lg={4}>
+          <div
+            className="p-4 shadow rounded-4"
+            style={{
+              backgroundColor: "white",
+              border: "1px solid #dee2e6",
+            }}
+          >
+            <h2 className="custom-txt-color text-center mb-6">
+              PERSONAL BUDGET MANAGER
+            </h2>
+            <h2 className="custom-txt-color ms-2 mb-4">Register</h2>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3" controlId="formName">
+                <Form.Control
+                  className="underline-input custom-placeholder"
+                  type="text"
+                  placeholder="Name"
+                  name="nome"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formSurname">
+                <Form.Control
+                  className="underline-input custom-placeholder"
+                  type="text"
+                  placeholder="Surname"
+                  name="cognome"
+                  value={formData.cognome}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-4" controlId="formEmail">
+                <Form.Control
+                  className="underline-input custom-placeholder"
+                  type="email"
+                  placeholder="Email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formUsername">
+                <Form.Control
+                  className="underline-input custom-placeholder"
+                  type="text"
+                  placeholder="Username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formPassword">
+                <Form.Control
+                  className="underline-input custom-placeholder"
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formAvatar">
+                <Form.Control
+                  className="underline-input custom-placeholder"
+                  type="text"
+                  placeholder="Avatar URL (Optional)"
+                  name="avatar"
+                  value={formData.avatar}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <div className="d-grid d-flex justify-content-center align-items-center">
+                <Button className="btn-custom w-50 p-2" type="submit">
+                  Register
+                </Button>
+              </div>
+            </Form>
+          </div>
+        </Col>
+      </Row>
+    </Container>
+  );
 }
 
 export default RegistrationPage;

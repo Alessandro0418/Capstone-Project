@@ -1,0 +1,47 @@
+/* Registration css */
+.bg-registration {
+  background-color: #e6e7ea;
+}
+
+.btn-custom {
+  background-color: #1b2025;
+  border: #1b2025;
+}
+
+.btn-custom:hover {
+  background-color: #1b2025;
+  transform: scale(1.05);
+}
+
+.underline-input {
+  border: none;
+  border-bottom: 2px solid #ccc;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.underline-input:focus {
+  border-bottom: 2px solid #1b2025;
+  box-shadow: none;
+  outline: none;
+}
+
+.custom-placeholder::placeholder {
+  color: #1b2025;
+  opacity: 1;
+}
+
+.custom-txt-color {
+  color: #1a1f24;
+}
+
+/* Custom global classes */
+
+.mb-6 {
+  margin-bottom: 60px;
+}
+
+.mb-7 {
+  margin-bottom: 80px;
+}

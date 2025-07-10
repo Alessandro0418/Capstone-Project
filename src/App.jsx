@@ -6,13 +6,11 @@ import "./App.css";
 function App() {
   return (
     <BrowserRouter>
-      <Container fluid className="p-0">
-        <Routes>
-          {/* Redirect automatico da "/" a "/register" */}
-          <Route path="/" element={<Navigate to="/register" replace />} />
-          <Route path="/register" element={<RegistrationPage />} />
-        </Routes>
-      </Container>
+      <Routes>
+        {/* Redirect automatico da "/" a "/register" */}
+        <Route path="/" element={<Navigate to="/register" replace />} />
+        <Route path="/register" element={<RegistrationPage />} />
+      </Routes>
     </BrowserRouter>
   );
 }
