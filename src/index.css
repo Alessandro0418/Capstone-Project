@@ -45,3 +45,13 @@
 .mb-7 {
   margin-bottom: 80px;
 }
+
+.btn-custom2 {
+  background-color: #f8f9fa;
+  border: #f8f9fa;
+}
+
+.btn-custom2:hover {
+  background-color: #f8f9fa;
+  color: #f8f9fa;
+}
