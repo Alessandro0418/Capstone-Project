@@ -27,7 +27,7 @@ function RegistrationPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/auth/register", formData); // aggiorna la porta se diversa
+      await axios.post("http://localhost:8080/auth/register", formData);
       navigate("/login");
     } catch (err) {
       console.error(err);
@@ -124,6 +124,20 @@ function RegistrationPage() {
                 <Button className="btn-custom w-50 p-2" type="submit">
                   Register
                 </Button>
+              </div>
+              <div className="text-center mt-3">
+                <span className="me-1">Already have an account?</span>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/login");
+                  }}
+                  className="text-decoration-none"
+                  style={{ color: "#1b2025", fontWeight: "bold" }}
+                >
+                  Log In
+                </a>
               </div>
             </Form>
           </div>
