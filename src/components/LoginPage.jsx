@@ -22,9 +22,23 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     try {
-      await axios.post("http://localhost:8080/auth/login", formData);
-      navigate("/dashboard");
+      const response = await axios.post(
+        "http://localhost:8080/auth/login",
+        formData
+      );
+      const token = response.data.token;
+      if (token) {
+        localStorage.setItem("token", token);
+        console.log("Token salvato:", token);
+        navigate("/dashboard");
+      } else {
+        setError(
+          "Login riuscito, ma nessun token ricevuto. Contattare l'amministratore."
+        );
+        console.error("Risposta di login senza token:", response.data);
+      }
     } catch (err) {
       console.error(err);
       setError("Login fallito. Verifica username e password.");
