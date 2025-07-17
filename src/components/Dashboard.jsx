@@ -18,12 +18,16 @@ import {
   Col,
   Spinner,
   Alert,
+  Modal,
 } from "react-bootstrap";
 import Offcanvas from "react-bootstrap/Offcanvas";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
+
+import TransactionForm from "./TransactionForm";
+import CategoryForm from "./CategoryForm";
 
 ChartJS.register(
   CategoryScale,
@@ -39,6 +43,16 @@ function Dashboard() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+
+  const handleShowTransactionModal = () => setShowTransactionModal(true);
+  const handleCloseTransactionModal = () => setShowTransactionModal(false);
+  const handleShowCategoryModal = () => setShowCategoryModal(true);
+  const handleCloseCategoryModal = () => setShowCategoryModal(false);
+
+  const [categories, setCategories] = useState([]);
 
   const [riepilogoMensile, setRiepilogoMensile] = useState(null);
   const [totaliPerCategoria, setTotaliPerCategoria] = useState([]);
@@ -89,7 +103,9 @@ function Dashboard() {
         `http://localhost:8080/api/dashboard/per-categoria`,
         config
       );
-      setTotaliPerCategoria(categorieRes.data);
+      const filteredExpenses = categorieRes.data.filter(
+        (item) => item.expenses && item.expenses.includes("EXPENSE")
+      );
 
       // tutte le transazioni
       const transazioniRes = await axios.get(
@@ -101,6 +117,12 @@ function Dashboard() {
         .sort((a, b) => new Date(b.data) - new Date(a.data))
         .slice(0, 5);
       setTransazioniRecenti(recenti);
+
+      const allCategoriesRes = await axios.get(
+        `http://localhost:8080/api/categorie`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setCategories(allCategoriesRes.data);
     } catch (err) {
       console.error("Errore nel recupero dati dashboard:", err);
       setError(
@@ -115,15 +137,30 @@ function Dashboard() {
     fetchDashboardData();
   }, [mese, anno]);
 
+  const handleTransactionAdded = () => {
+    fetchDashboardData();
+    handleCloseTransactionModal();
+  };
+
+  const handleCategoryAdded = () => {
+    fetchDashboardData();
+    handleCloseCategoryModal();
+  };
+
   // grafico a torta (spese per categoria)
   const pieChartData = {
     labels: totaliPerCategoria.map((item) => item.categoria),
     datasets: [
       {
         data: totaliPerCategoria.map((item) => Math.abs(item.totale)),
-        backgroundColor: totaliPerCategoria.map(
-          (_, index) => `hsl(${index * 60}, 70%, 50%)`
-        ),
+        backgroundColor: totaliPerCategoria.map((item, index) => {
+          const category = categories.find(
+            (cat) => cat.name === item.categoria
+          );
+          return category && category.color
+            ? category.color
+            : `hsl(${index * 60}, 70%, 50%)`;
+        }),
         hoverOffset: 4,
       },
     ],
@@ -131,6 +168,7 @@ function Dashboard() {
 
   const pieChartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
@@ -184,7 +222,7 @@ function Dashboard() {
         {/*OffCanvas button*/}
         <Col className="d-flex justify-content-end">
           <Button onClick={handleShow} className="btn-custom2 me-1">
-            <i class="bi bi-gear-fill fs-4 text-black"></i>
+            <i className="bi bi-gear-fill fs-4 text-black"></i>
           </Button>
         </Col>
 
@@ -272,7 +310,10 @@ function Dashboard() {
           <div className="p-3 bg-white shadow rounded h-100">
             <h5>Spending Trend</h5>
             {totaliPerCategoria.length > 0 ? (
-              <Pie data={pieChartData} options={pieChartOptions} />
+              <div style={{ height: "300px" }}>
+                {" "}
+                <Pie data={pieChartData} options={pieChartOptions} />
+              </div>
             ) : (
               <p className="text-muted">
                 Nessuna spesa registrata per questo mese/anno.
@@ -297,9 +338,24 @@ function Dashboard() {
                       <small className="text-muted">
                         {moment(t.data).format("DD/MM/YYYY")}
                       </small>
+                      {t.categoria && (
+                        <span
+                          className="ms-2 badge rounded-pill"
+                          style={{
+                            backgroundColor: t.categoria.color || "#6c757d",
+                            color: "white",
+                          }}
+                        >
+                          {t.categoria.name}
+                        </span>
+                      )}
                     </div>
                     <span
-                      className={t.importo > 0 ? "text-success" : "text-danger"}
+                      className={
+                        t.expenses && t.expenses.includes("INCOME")
+                          ? "text-success"
+                          : "text-danger"
+                      }
                     >
                       €{t.importo.toFixed(2)}
                     </span>
@@ -318,26 +374,73 @@ function Dashboard() {
         <Col md={6}>
           <div className="p-3 bg-white shadow rounded">
             <h5>Add Transaction</h5>
-            <Button
-              className="btn-custom3"
-              onClick={() => navigate("/add-transaction")}
-            >
-              Add New Transaction
+            <Button variant="primary" onClick={handleShowTransactionModal}>
+              <i className="bi bi-plus-circle me-2"></i> Add New Transaction
             </Button>
           </div>
         </Col>
         <Col md={6}>
           <div className="p-3 bg-white shadow rounded">
             <h5>Add Category</h5>
-            <Button
-              className="btn-custom3"
-              onClick={() => navigate("/add-category")}
-            >
-              Add New Category
+            <Button variant="info" onClick={handleShowCategoryModal}>
+              <i className="bi bi-tags me-2"></i> Add New Category
             </Button>
           </div>
         </Col>
       </Row>
+
+      <Modal show={showTransactionModal} onHide={handleCloseTransactionModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Aggiungi Nuova Transazione</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <TransactionForm
+            onTransactionAdded={handleTransactionAdded}
+            categories={categories}
+          />
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showCategoryModal} onHide={handleCloseCategoryModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Aggiungi Nuova Categoria</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <CategoryForm onCategoryAdded={handleCategoryAdded} />
+        </Modal.Body>
+      </Modal>
+
+      {/*display all categories */}
+      <h3 className="mt-4">Tutte le Categorie</h3>
+      {categories.length > 0 ? (
+        <ul className="list-group">
+          {categories.map((c) => (
+            <li
+              key={c.id}
+              className="list-group-item d-flex justify-content-between align-items-center"
+            >
+              {c.name}
+              {c.color && (
+                <span
+                  className="ms-2"
+                  style={{
+                    backgroundColor: c.color,
+                    width: "20px",
+                    height: "20px",
+                    display: "inline-block",
+                    borderRadius: "50%",
+                    border: "1px solid #ccc",
+                  }}
+                ></span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <Alert variant="info" className="mt-3">
+          Nessuna categoria disponibile. Aggiungine una!
+        </Alert>
+      )}
     </Container>
   );
 }
