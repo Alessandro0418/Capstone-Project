@@ -1,4 +1,5 @@
 import { Line, Pie } from "react-chartjs-2";
+import logoPBM from "../assets/PBM_logo.png";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -44,6 +45,8 @@ function Dashboard() {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const [userInfo, setUserInfo] = useState(null);
+
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
 
@@ -69,6 +72,11 @@ function Dashboard() {
     return localStorage.getItem("token");
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   const fetchDashboardData = async () => {
     setLoading(true);
     setError(null);
@@ -91,6 +99,12 @@ function Dashboard() {
         },
       };
 
+      //dati utente
+      const userRes = await axios.get(`http://localhost:8080/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUserInfo(userRes.data);
+
       // riepilogo mensile
       const riepilogoRes = await axios.get(
         `http://localhost:8080/api/dashboard/riepilogo-mensile`,
@@ -106,6 +120,7 @@ function Dashboard() {
       const filteredExpenses = categorieRes.data.filter(
         (item) => item.expenses && item.expenses.includes("EXPENSE")
       );
+      setTotaliPerCategoria(filteredExpenses);
 
       // tutte le transazioni
       const transazioniRes = await axios.get(
@@ -145,6 +160,67 @@ function Dashboard() {
   const handleCategoryAdded = () => {
     fetchDashboardData();
     handleCloseCategoryModal();
+  };
+
+  //eliminazione transazioni e categorie
+
+  const handleDeleteTransazione = async (id) => {
+    if (!window.confirm("Sei sicuro di voler eliminare questa transazione?")) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    const token = getToken();
+
+    try {
+      await axios.delete(`http://localhost:8080/api/transazioni/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      fetchDashboardData();
+      alert("Transazione eliminata con successo!");
+    } catch (err) {
+      console.error("Errore durante l'eliminazione della transazione:", err);
+      alert(
+        "Errore nell'eliminazione della transazione: " +
+          (err.response?.data || "Si è verificato un errore.")
+      );
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCategoria = async (id, categoryName) => {
+    if (
+      !window.confirm(
+        `Sei sicuro di voler eliminare la categoria "${categoryName}"? Attenzione: Se ci sono transazioni associate a questa categoria, non potrai eliminarla!`
+      )
+    ) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    const token = getToken();
+
+    try {
+      await axios.delete(`http://localhost:8080/api/categorie/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      fetchDashboardData();
+      alert("Categoria eliminata con successo!");
+    } catch (err) {
+      console.error("Errore durante l'eliminazione della categoria:", err);
+
+      alert(
+        "Errore nell'eliminazione della categoria: " +
+          (err.response?.data || "Si è verificato un errore.")
+      );
+      setLoading(false);
+    }
   };
 
   // grafico a torta (spese per categoria)
@@ -215,9 +291,27 @@ function Dashboard() {
   return (
     <Container fluid className="p-4 bg-light min-vh-100">
       <Row className="mb-4">
-        <h1 className="fw-bold">Personal Budget Manager</h1>
+        <div className="d-flex">
+          <span className="me-1">
+            <h1 className="fw-bold">Personal</h1>
+          </span>
+          <span className="me-1 custom-green-text">
+            <h1 className="fw-bold">Budget</h1>
+          </span>
+          <span className="me-1">
+            <h1 className="fw-bold">Manager</h1>
+          </span>
+          <img
+            className="w-custom ms-2"
+            src={logoPBM}
+            alt="Personal-Budget-Manager-Logo"
+          />
+        </div>
+        <div>
+          <p className="fw-bold">Welcome Back {userInfo.nome}...</p>
+        </div>
         <Col>
-          <h2 className="text-primary">Dashboard</h2>
+          <h2 className="custom-black-text">Dashboard</h2>
         </Col>
         {/*OffCanvas button*/}
         <Col className="d-flex justify-content-end">
@@ -225,13 +319,60 @@ function Dashboard() {
             <i className="bi bi-gear-fill fs-4 text-black"></i>
           </Button>
         </Col>
-
         <Offcanvas show={show} onHide={handleClose} placement="end">
           <Offcanvas.Header closeButton>
             <Offcanvas.Title>Settings</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
-            Mettere lo switch per la dark mode ed altro...
+            {userInfo ? (
+              <div>
+                <h4 className="mb-3">User Info</h4>
+                {userInfo.profilePictureUrl && (
+                  <div className="mb-3 text-center">
+                    <img
+                      src={userInfo.profilePictureUrl}
+                      alt="Foto Profilo"
+                      className="rounded-circle"
+                      style={{
+                        width: "100px",
+                        height: "100px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </div>
+                )}
+                <p>
+                  <img
+                    className="rounded"
+                    src={userInfo.avatar}
+                    alt="user-avatar"
+                  />
+                </p>
+                <p>
+                  <strong>Name:</strong> {userInfo.nome}
+                </p>
+                <p>
+                  <strong>Surname:</strong> {userInfo.cognome}
+                </p>
+                <p>
+                  <strong>Email:</strong> {userInfo.email}
+                </p>
+                <p>
+                  <strong>Username:</strong> {userInfo.username}
+                </p>
+                <hr />
+                <p>Mettere altri setting...</p>
+                <hr />
+                <Button
+                  onClick={handleLogout}
+                  className="w-100 mt-3 custom-red border-0"
+                >
+                  <i className="bi bi-box-arrow-right me-2"></i> Logout
+                </Button>
+              </div>
+            ) : (
+              <p>Caricamento informazioni utente...</p>
+            )}
           </Offcanvas.Body>
         </Offcanvas>
       </Row>
@@ -359,6 +500,13 @@ function Dashboard() {
                     >
                       €{t.importo.toFixed(2)}
                     </span>
+                    <Button
+                      size="sm"
+                      onClick={() => handleDeleteTransazione(t.id)}
+                      className="ms-2 custom-red border-0"
+                    >
+                      <i className="bi bi-trash fs-6"></i>
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -374,7 +522,10 @@ function Dashboard() {
         <Col md={6}>
           <div className="p-3 bg-white shadow rounded">
             <h5>Add Transaction</h5>
-            <Button variant="primary" onClick={handleShowTransactionModal}>
+            <Button
+              className="btn-custom3"
+              onClick={handleShowTransactionModal}
+            >
               <i className="bi bi-plus-circle me-2"></i> Add New Transaction
             </Button>
           </div>
@@ -382,7 +533,7 @@ function Dashboard() {
         <Col md={6}>
           <div className="p-3 bg-white shadow rounded">
             <h5>Add Category</h5>
-            <Button variant="info" onClick={handleShowCategoryModal}>
+            <Button className="btn-custom3" onClick={handleShowCategoryModal}>
               <i className="bi bi-tags me-2"></i> Add New Category
             </Button>
           </div>
@@ -417,7 +568,7 @@ function Dashboard() {
           {categories.map((c) => (
             <li
               key={c.id}
-              className="list-group-item d-flex justify-content-between align-items-center"
+              className="list-group-item d-flex justify-content-end align-items-center"
             >
               {c.name}
               {c.color && (
@@ -433,11 +584,18 @@ function Dashboard() {
                   }}
                 ></span>
               )}
+              <Button
+                className="custom-red ms-3 border-0"
+                size="sm"
+                onClick={() => handleDeleteCategoria(c.id, c.name)}
+              >
+                <i className="bi bi-trash fs-6"></i>
+              </Button>
             </li>
           ))}
         </ul>
       ) : (
-        <Alert variant="info" className="mt-3">
+        <Alert className="mt-3 custom-black-allerts text-white border-0">
           Nessuna categoria disponibile. Aggiungine una!
         </Alert>
       )}

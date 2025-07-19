@@ -65,3 +65,38 @@
   background-color: #f8f9fa;
   color: #000000;
 }
+
+.w-custom {
+  width: 60px;
+}
+
+/* custom colors */
+
+.custom-black {
+  background-color: #1b2025;
+}
+
+.custom-black-allerts {
+  background-color: #1b20257a;
+}
+
+.custom-black-text {
+  color: #1b2025;
+}
+
+.custom-red {
+  background-color: white;
+  color: black;
+}
+
+.custom-red:hover {
+  background-color: rgb(158, 0, 0);
+}
+
+.custom-green {
+  background-color: #009b6b;
+}
+
+.custom-green-text {
+  color: #009b6b;
+}
