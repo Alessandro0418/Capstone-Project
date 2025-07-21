@@ -67,6 +67,27 @@ function Dashboard() {
   const [anno, setAnno] = useState(new Date().getFullYear());
 
   const navigate = useNavigate();
+  // -------------------
+  // DARK MODE
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme === "dark";
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
+  }, [isDarkMode]);
+
+  const toggleTheme = () => {
+    setIsDarkMode((prevMode) => !prevMode);
+  };
+
+  // -------------------
 
   const getToken = () => {
     return localStorage.getItem("token");
@@ -74,7 +95,7 @@ function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/Home");
   };
 
   const fetchDashboardData = async () => {
@@ -361,7 +382,20 @@ function Dashboard() {
                   <strong>Username:</strong> {userInfo.username}
                 </p>
                 <hr />
-                <p>Mettere altri setting...</p>
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                  <span>
+                    Theme
+                    <i class="bi bi-brightness-high-fill ms-1 me-1"></i>/
+                    <i class="bi bi-moon-fill ms-1 me-1"></i>
+                  </span>
+                  <Form.Check
+                    type="switch"
+                    id="dark-mode-switch"
+                    checked={isDarkMode}
+                    onChange={toggleTheme}
+                    label={isDarkMode ? "On" : "Off"}
+                  />
+                </div>
                 <hr />
                 <Button
                   onClick={handleLogout}
@@ -381,7 +415,7 @@ function Dashboard() {
       <Row className="mb-4">
         <Col md={3}>
           <Form.Group controlId="selectMonth">
-            <Form.Label>Mese</Form.Label>
+            <Form.Label>Month</Form.Label>
             <Form.Control as="select" value={mese} onChange={handleMonthChange}>
               {[...Array(12).keys()].map((i) => (
                 <option key={i + 1} value={i + 1}>
@@ -393,7 +427,7 @@ function Dashboard() {
         </Col>
         <Col md={3}>
           <Form.Group controlId="selectYear">
-            <Form.Label>Anno</Form.Label>
+            <Form.Label>Year</Form.Label>
             <Form.Control as="select" value={anno} onChange={handleYearChange}>
               {[...Array(5).keys()].map((i) => {
                 const y = new Date().getFullYear() - i;
