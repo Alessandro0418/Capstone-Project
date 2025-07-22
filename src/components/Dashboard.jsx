@@ -364,7 +364,7 @@ function Dashboard() {
                 )}
                 <p>
                   <img
-                    className="rounded"
+                    className="rounded w-25"
                     src={userInfo.avatar}
                     alt="user-avatar"
                   />
