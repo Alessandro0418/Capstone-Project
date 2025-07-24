@@ -196,3 +196,65 @@
 .dark-mode .offcanvas .btn-close {
   filter: invert(0) grayscale(1) brightness(1.5);
 }
+
+/*---------------------------------------------------------------------------*/
+
+/* CALENDARIO */
+
+/* adattamento alla box */
+.react-calendar-full-width {
+  width: 100% !important;
+  max-width: 100% !important;
+  border-radius: 8px;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* rimozione padding predefinito */
+.react-calendar-full-width .react-calendar__viewContainer {
+  padding: 0;
+}
+
+/* expence days style */
+.react-calendar-full-width .react-calendar__tile.has-expense {
+  background-color: #f8d7da !important;
+  color: #721c24 !important;
+  font-weight: bold;
+}
+
+/* income days style */
+.react-calendar-full-width .react-calendar__tile.has-income {
+  background-color: #d4edda !important;
+  color: #155724 !important;
+  font-weight: bold;
+}
+
+/* stile sia pe entrate che per uscite, fa un 50/50 */
+.react-calendar-full-width .react-calendar__tile.has-expense.has-income {
+  background: linear-gradient(
+    to bottom right,
+    #d4edda 50%,
+    #f8d7da 50%
+  ) !important;
+  color: #333 !important;
+}
+
+/* celle del calendario custom */
+.react-calendar-full-width .react-calendar__tile {
+  min-height: 40px;
+  padding: 5px;
+}
+
+.react-calendar-full-width .react-calendar__tile--neighboringMonth {
+  opacity: 0.6;
+}
+
+/* giorno corrente */
+.react-calendar-full-width .react-calendar__tile--now {
+  background: #e0f2f7 !important;
+  color: #0056b3 !important;
+}
+/* hover */
+.react-calendar-full-width .react-calendar__tile:hover {
+  background-color: #e6e6e6 !important;
+  cursor: pointer;
+}

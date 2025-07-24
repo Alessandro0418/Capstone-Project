@@ -1,15 +1,4 @@
-import { Line, Pie } from "react-chartjs-2";
 import logoPBM from "../assets/PBM_logo.png";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
 import moment from "moment";
 import {
   Form,
@@ -30,15 +19,7 @@ import axios from "axios";
 import TransactionForm from "./TransactionForm";
 import CategoryForm from "./CategoryForm";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  ArcElement,
-  Tooltip,
-  Legend
-);
+import Calendar from "react-calendar";
 
 function Dashboard() {
   const [show, setShow] = useState(false);
@@ -66,7 +47,16 @@ function Dashboard() {
   const [mese, setMese] = useState(new Date().getMonth() + 1);
   const [anno, setAnno] = useState(new Date().getFullYear());
 
+  const [transactionDatesMap, setTransactionDatesMap] = useState({});
+  const [date, setDate] = useState(new Date());
+  const handleCalendarChange = (newDate) => {
+    setDate(newDate);
+    setMese(newDate.getMonth() + 1);
+    setAnno(newDate.getFullYear());
+  };
+
   const navigate = useNavigate();
+
   // -------------------
   // DARK MODE
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -146,13 +136,37 @@ function Dashboard() {
       // tutte le transazioni
       const transazioniRes = await axios.get(
         `http://localhost:8080/api/transazioni`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { mese, anno },
+        }
       );
+
       // transazioni dalla più recente e prende le prime 5
       const recenti = transazioniRes.data
         .sort((a, b) => new Date(b.data) - new Date(a.data))
         .slice(0, 5);
       setTransazioniRecenti(recenti);
+
+      //transazioni calendario
+      const newTransactionDatesMap = {};
+      transazioniRes.data.forEach((t) => {
+        const formattedDate = moment(t.data).format("YYYY-MM-DD");
+        if (!newTransactionDatesMap[formattedDate]) {
+          newTransactionDatesMap[formattedDate] = new Set();
+        }
+        if (t.expenses && t.expenses.includes("EXPENSE")) {
+          newTransactionDatesMap[formattedDate].add("expense");
+        } else if (t.expenses && t.expenses.includes("INCOME")) {
+          newTransactionDatesMap[formattedDate].add("income");
+        }
+      });
+      for (const dateKey in newTransactionDatesMap) {
+        newTransactionDatesMap[dateKey] = Array.from(
+          newTransactionDatesMap[dateKey]
+        );
+      }
+      setTransactionDatesMap(newTransactionDatesMap);
 
       const allCategoriesRes = await axios.get(
         `http://localhost:8080/api/categorie`,
@@ -184,7 +198,6 @@ function Dashboard() {
   };
 
   //eliminazione transazioni e categorie
-
   const handleDeleteTransazione = async (id) => {
     if (!window.confirm("Sei sicuro di voler eliminare questa transazione?")) {
       return;
@@ -243,40 +256,6 @@ function Dashboard() {
       setLoading(false);
     }
   };
-
-  // grafico a torta (spese per categoria)
-  const pieChartData = {
-    labels: totaliPerCategoria.map((item) => item.categoria),
-    datasets: [
-      {
-        data: totaliPerCategoria.map((item) => Math.abs(item.totale)),
-        backgroundColor: totaliPerCategoria.map((item, index) => {
-          const category = categories.find(
-            (cat) => cat.name === item.categoria
-          );
-          return category && category.color
-            ? category.color
-            : `hsl(${index * 60}, 70%, 50%)`;
-        }),
-        hoverOffset: 4,
-      },
-    ],
-  };
-
-  const pieChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Spese per Categoria",
-      },
-    },
-  };
-
   //selezione mese/anno
   const handleMonthChange = (e) => {
     setMese(parseInt(e.target.value));
@@ -284,6 +263,25 @@ function Dashboard() {
 
   const handleYearChange = (e) => {
     setAnno(parseInt(e.target.value));
+  };
+
+  // applica css al calendario
+  const tileClassName = ({ date, view }) => {
+    if (view === "month") {
+      const formattedDate = moment(date).format("YYYY-MM-DD");
+      const types = transactionDatesMap[formattedDate];
+      if (types) {
+        let classes = [];
+        if (types.includes("expense")) {
+          classes.push("has-expense");
+        }
+        if (types.includes("income")) {
+          classes.push("has-income");
+        }
+        return classes.join(" ");
+      }
+    }
+    return null;
   };
 
   if (loading) {
@@ -478,25 +476,21 @@ function Dashboard() {
         </Col>
       </Row>
 
-      {/* grafico spese + transazioni recenti */}
+      {/* calendar */}
       <Row className="mb-4">
-        <Col md={8}>
-          {/* grafico */}
+        <Col md={6}>
           <div className="p-3 bg-white shadow rounded h-100">
-            <h5>Spending Trend</h5>
-            {totaliPerCategoria.length > 0 ? (
-              <div style={{ height: "300px" }}>
-                {" "}
-                <Pie data={pieChartData} options={pieChartOptions} />
-              </div>
-            ) : (
-              <p className="text-muted">
-                Nessuna spesa registrata per questo mese/anno.
-              </p>
-            )}
+            <h5>Income/Expenses Calendar</h5>
+            <Calendar
+              onChange={handleCalendarChange}
+              value={date}
+              locale="it-IT"
+              className="react-calendar-full-width"
+              tileClassName={tileClassName}
+            />
           </div>
         </Col>
-        <Col md={4}>
+        <Col md={6}>
           {/* transazioni recenti */}
           <div className="p-3 bg-white shadow rounded h-100">
             <h5>Recent Transactions</h5>
