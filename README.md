@@ -1,4 +1,9 @@
-## Capostone Project di Alessandro Di Giannantonio
+## Capstone Project di Alessandro Di Giannantonio
+---
+
+# LINKS:
+
+Repository GitHub Backend --> https://github.com/Alessandro0418/Capstone-Project-Backend
 
 ---
 
@@ -57,11 +62,6 @@ La possibilità di selezionare mese ed anno
 
 - Tasto Logout che disconnette l'utente e riporta alla Home Page
 
----
-
-# LINKS:
-
-Repository GitHub Backend --> https://github.com/Alessandro0418/Capstone-Project-Backend
 Repository GitHub Frontend --> https://github.com/Alessandro0418/Capostone-Project
 
 ---
