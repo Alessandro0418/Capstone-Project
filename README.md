@@ -5,6 +5,7 @@
 
 Repository GitHub Backend --> https://github.com/Alessandro0418/Capstone-Project-Backend
 
+Repository GitHub Frontend --> https://github.com/Alessandro0418/Capostone-Project
 ---
 
 # Personal Budget Manager – Web App per la gestione delle finanze personali
@@ -61,7 +62,5 @@ La possibilità di selezionare mese ed anno
 - La possibilità di switchare fra dark mode e light mode (la modifica tra dark mode e light mode si applica solo alla dashboard in quanto la dashboard è l'area personale dell'utente)
 
 - Tasto Logout che disconnette l'utente e riporta alla Home Page
-
-Repository GitHub Frontend --> https://github.com/Alessandro0418/Capostone-Project
 
 ---
