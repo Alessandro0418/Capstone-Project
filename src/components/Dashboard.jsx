@@ -199,7 +199,7 @@ function Dashboard() {
 
   //eliminazione transazioni e categorie
   const handleDeleteTransazione = async (id) => {
-    if (!window.confirm("Sei sicuro di voler eliminare questa transazione?")) {
+    if (!window.confirm("Do you want to delete this transaction?")) {
       return;
     }
 
@@ -214,7 +214,7 @@ function Dashboard() {
         },
       });
       fetchDashboardData();
-      alert("Transazione eliminata con successo!");
+      alert("Transaction successfully deleted!");
     } catch (err) {
       console.error("Errore durante l'eliminazione della transazione:", err);
       alert(
@@ -228,7 +228,7 @@ function Dashboard() {
   const handleDeleteCategoria = async (id, categoryName) => {
     if (
       !window.confirm(
-        `Sei sicuro di voler eliminare la categoria "${categoryName}"? Attenzione: Se ci sono transazioni associate a questa categoria, non potrai eliminarla!`
+        `Do you want to delete the category "${categoryName}"? Warning: This category cannot be deleted if it has any associated transactions`
       )
     ) {
       return;
@@ -245,7 +245,7 @@ function Dashboard() {
         },
       });
       fetchDashboardData();
-      alert("Categoria eliminata con successo!");
+      alert("Category successfully deleted!");
     } catch (err) {
       console.error("Errore durante l'eliminazione della categoria:", err);
 
@@ -311,20 +311,11 @@ function Dashboard() {
     <Container fluid className="p-4 bg-light min-vh-100">
       <Row className="mb-4">
         <div className="d-flex">
-          <span className="me-1">
-            <h1 className="fw-bold">Personal</h1>
-          </span>
-          <span className="me-1 custom-green-text">
-            <h1 className="fw-bold">Budget</h1>
-          </span>
-          <span className="me-1">
-            <h1 className="fw-bold">Manager</h1>
-          </span>
-          <img
-            className="w-custom ms-2"
-            src={logoPBM}
-            alt="Personal-Budget-Manager-Logo"
-          />
+          <h1 className="fw-bold d-flex flex-wrap dashboard-title">
+            <span className="me-2">Personal</span>
+            <span className="me-2 custom-green-text">Budget</span>
+            <span>Manager</span>
+          </h1>
         </div>
         <div>
           <p className="fw-bold">Welcome Back {userInfo.nome}...</p>
@@ -386,18 +377,32 @@ function Dashboard() {
                     <i class="bi bi-brightness-high-fill ms-1 me-1"></i>/
                     <i class="bi bi-moon-fill ms-1 me-1"></i>
                   </span>
-                  <Form.Check
-                    type="switch"
-                    id="dark-mode-switch"
-                    checked={isDarkMode}
-                    onChange={toggleTheme}
-                    label={isDarkMode ? "On" : "Off"}
-                  />
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      id="dark-mode-switch"
+                      checked={!isDarkMode}
+                      onChange={toggleTheme}
+                    />
+                    <span className="slider">
+                      <div className="star star_1"></div>
+                      <div className="star star_2"></div>
+                      <div className="star star_3"></div>
+
+                      <svg viewBox="0 0 16 16" className="cloud_1 cloud">
+                        <path
+                          transform="matrix(.77976 0 0 .78395 -299.99 -418.63)"
+                          fill="#fff"
+                          d="m391.84 540.91c-.421-.329-.949-.524-1.523-.524-1.351 0-2.451 1.084-2.485 2.435-1.395.526-2.388 1.88-2.388 3.466 0 1.874 1.385 3.423 3.182 3.667v.034h12.73v-.006c1.775-.104 3.182-1.584 3.182-3.395 0-1.747-1.309-3.186-2.994-3.379.007-.106.011-.214.011-.322 0-2.707-2.271-4.901-5.072-4.901-2.073 0-3.856 1.202-4.643 2.925"
+                        ></path>
+                      </svg>
+                    </span>
+                  </label>
                 </div>
                 <hr />
                 <Button
                   onClick={handleLogout}
-                  className="w-100 mt-3 custom-red border-0"
+                  className="w-100 mt-3 btn-logout"
                 >
                   <i className="bi bi-box-arrow-right me-2"></i> Logout
                 </Button>
@@ -424,7 +429,7 @@ function Dashboard() {
           </Form.Group>
         </Col>
         <Col md={3}>
-          <Form.Group controlId="selectYear">
+          <Form.Group controlId="selectYear" className="mt-2 mt-lg-0">
             <Form.Label>Year</Form.Label>
             <Form.Control as="select" value={anno} onChange={handleYearChange}>
               {[...Array(5).keys()].map((i) => {
@@ -444,7 +449,7 @@ function Dashboard() {
       <Row className="mb-4">
         <Col md={4}>
           {/* saldo totale */}
-          <div className="p-3 bg-white shadow rounded">
+          <div className="p-3 bg-white shadow rounded mb-3">
             <h5>Current Balance</h5>
             <h3>
               €{riepilogoMensile ? riepilogoMensile.saldo.toFixed(2) : "0.00"}
@@ -484,7 +489,7 @@ function Dashboard() {
             <Calendar
               onChange={handleCalendarChange}
               value={date}
-              locale="it-IT"
+              locale="us-US"
               className="react-calendar-full-width"
               tileClassName={tileClassName}
             />
@@ -492,7 +497,7 @@ function Dashboard() {
         </Col>
         <Col md={6}>
           {/* transazioni recenti */}
-          <div className="p-3 bg-white shadow rounded h-100">
+          <div className="p-3 bg-white shadow rounded h-100 mt-3 mt-lg-0">
             <h5>Recent Transactions</h5>
             {transazioniRecenti.length > 0 ? (
               <ul className="list-group list-group-flush">
@@ -531,7 +536,7 @@ function Dashboard() {
                     <Button
                       size="sm"
                       onClick={() => handleDeleteTransazione(t.id)}
-                      className="ms-2 custom-red border-0"
+                      className="ms-2 custom-red border-0 rounded-5"
                     >
                       <i className="bi bi-trash fs-6"></i>
                     </Button>
@@ -539,7 +544,7 @@ function Dashboard() {
                 ))}
               </ul>
             ) : (
-              <p className="text-muted">Nessuna transazione recente.</p>
+              <p className="text-muted">No recent transactions</p>
             )}
           </div>
         </Col>
@@ -548,7 +553,7 @@ function Dashboard() {
       {/* aggiungi transazione e/o categoria */}
       <Row>
         <Col md={6}>
-          <div className="p-3 bg-white shadow rounded">
+          <div className="p-3 bg-white shadow rounded mt-3">
             <h5>Add Transaction</h5>
             <Button
               className="btn-custom3"
@@ -559,7 +564,7 @@ function Dashboard() {
           </div>
         </Col>
         <Col md={6}>
-          <div className="p-3 bg-white shadow rounded">
+          <div className="p-3 bg-white shadow rounded mt-3">
             <h5>Add Category</h5>
             <Button className="btn-custom3" onClick={handleShowCategoryModal}>
               <i className="bi bi-tags me-2"></i> Add New Category
@@ -570,7 +575,7 @@ function Dashboard() {
 
       <Modal show={showTransactionModal} onHide={handleCloseTransactionModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Aggiungi Nuova Transazione</Modal.Title>
+          <Modal.Title>Add New Transaction</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <TransactionForm
@@ -582,7 +587,7 @@ function Dashboard() {
 
       <Modal show={showCategoryModal} onHide={handleCloseCategoryModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Aggiungi Nuova Categoria</Modal.Title>
+          <Modal.Title>Add New Category</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <CategoryForm onCategoryAdded={handleCategoryAdded} />
@@ -590,7 +595,7 @@ function Dashboard() {
       </Modal>
 
       {/*display all categories */}
-      <h3 className="mt-4">Tutte le Categorie</h3>
+      <h3 className="mt-4">Categories</h3>
       {categories.length > 0 ? (
         <ul className="list-group">
           {categories.map((c) => (
@@ -613,7 +618,7 @@ function Dashboard() {
                 ></span>
               )}
               <Button
-                className="custom-red ms-3 border-0"
+                className="custom-red ms-3 border-0 rounded-5"
                 size="sm"
                 onClick={() => handleDeleteCategoria(c.id, c.name)}
               >
@@ -623,8 +628,8 @@ function Dashboard() {
           ))}
         </ul>
       ) : (
-        <Alert className="mt-3 custom-black-allerts text-white border-0">
-          Nessuna categoria disponibile. Aggiungine una!
+        <Alert className="mt-3 custom-black-alerts text-white border-0">
+          No categories available. Add one!
         </Alert>
       )}
     </Container>

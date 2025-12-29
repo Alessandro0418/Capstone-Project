@@ -43,7 +43,7 @@ function TransactionForm({ onTransactionAdded, categories }) {
           Authorization: `Bearer ${token}`,
         },
       });
-      setSuccess("Transazione aggiunta con successo!");
+      setSuccess("Transaction successfully added!");
       setTransactionData({
         descrizione: "",
         importo: "",
@@ -70,19 +70,19 @@ function TransactionForm({ onTransactionAdded, categories }) {
       {success && <Alert variant="success">{success}</Alert>}
 
       <Form.Group className="mb-3">
-        <Form.Label>Descrizione</Form.Label>
+        <Form.Label>Description</Form.Label>
         <Form.Control
           type="text"
           name="descrizione"
           value={transactionData.descrizione}
           onChange={handleChange}
           required
-          placeholder="Es. Caffè, Salario, Affitto"
+          placeholder="Coffee, Salary, Rent..."
         />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Importo</Form.Label>
+        <Form.Label>Amount</Form.Label>
         <Form.Control
           type="number"
           name="importo"
@@ -90,12 +90,12 @@ function TransactionForm({ onTransactionAdded, categories }) {
           onChange={handleChange}
           step="0.01"
           required
-          placeholder="Es. 10.50"
+          placeholder="10.50"
         />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Data</Form.Label>
+        <Form.Label>Date</Form.Label>
         <Form.Control
           type="date"
           name="data"
@@ -106,7 +106,7 @@ function TransactionForm({ onTransactionAdded, categories }) {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Categoria</Form.Label>
+        <Form.Label>Category</Form.Label>
         <Form.Control
           as="select"
           name="categoriaId"
@@ -114,7 +114,7 @@ function TransactionForm({ onTransactionAdded, categories }) {
           onChange={handleChange}
           required
         >
-          <option value="">Seleziona una categoria</option>
+          <option value="">Select a category</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>
               {cat.name}
@@ -124,7 +124,7 @@ function TransactionForm({ onTransactionAdded, categories }) {
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Tipo Transazione</Form.Label>
+        <Form.Label>Transaction Type</Form.Label>
         <Form.Control
           as="select"
           name="type"
@@ -132,13 +132,13 @@ function TransactionForm({ onTransactionAdded, categories }) {
           onChange={handleChange}
           required
         >
-          <option value="EXPENSE">Spesa</option>
-          <option value="INCOME">Entrata</option>
+          <option value="EXPENSE">Expense</option>
+          <option value="INCOME">Income</option>
         </Form.Control>
       </Form.Group>
 
-      <Button type="submit" variant="success">
-        Aggiungi Transazione
+      <Button type="submit" className="btn-custom3">
+        Add Transaction
       </Button>
     </Form>
   );

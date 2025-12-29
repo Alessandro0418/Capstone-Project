@@ -3,8 +3,9 @@ import axios from "axios";
 import { Form, Button, Alert } from "react-bootstrap";
 
 function CategoryForm({ onCategoryAdded }) {
+  const DEFAULT_COLOR = "#252222";
   const [categoryName, setCategoryName] = useState("");
-  const [categoryColor, setCategoryColor] = useState("");
+  const [categoryColor, setCategoryColor] = useState(DEFAULT_COLOR);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
@@ -36,7 +37,7 @@ function CategoryForm({ onCategoryAdded }) {
         }
       );
       setCategoryName("");
-      setCategoryColor("");
+      setCategoryColor(DEFAULT_COLOR);
       if (onCategoryAdded) {
         onCategoryAdded();
       }
@@ -54,18 +55,18 @@ function CategoryForm({ onCategoryAdded }) {
       {success && <Alert variant="success">{success}</Alert>}
 
       <Form.Group className="mb-3">
-        <Form.Label>Nome Categoria</Form.Label>
+        <Form.Label>Category Name</Form.Label>
         <Form.Control
           type="text"
           value={categoryName}
           onChange={(e) => setCategoryName(e.target.value)}
           required
-          placeholder="Es. Spesa, Lavoro, Svago"
+          placeholder="Expense, Work, Free Time..."
         />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Colore (Hex)</Form.Label>
+        <Form.Label>Color</Form.Label>
         <Form.Control
           type="color"
           value={categoryColor}
@@ -74,8 +75,8 @@ function CategoryForm({ onCategoryAdded }) {
         />
       </Form.Group>
 
-      <Button type="submit" variant="primary">
-        Aggiungi Categoria
+      <Button type="submit" className="btn-custom3">
+        Add Category
       </Button>
     </Form>
   );
