@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard";
 import HomePage from "./components/HomePage";
 import { Container } from "react-bootstrap";
 import "./App.css";
+import MobileNavbar from "./components/MobileNavbar";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/Home" element={<HomePage />} />
       </Routes>
+      <MobileNavbar />
     </BrowserRouter>
   );
 }

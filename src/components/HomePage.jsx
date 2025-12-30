@@ -35,20 +35,16 @@ function HomePage() {
                 alt="Personal-Budget-Manager-Logo"
               />
             </div>
-            <div className="d-flex justify-content-center align-items-center">
-              <span className="me-1">
-                <h1 className="fw-bold">Personal</h1>
-              </span>
-              <span className="me-1 custom-green-text">
-                <h1 className="fw-bold">Budget</h1>
-              </span>
-              <span className="me-1">
-                <h1 className="fw-bold">Manager</h1>
-              </span>
+            <div className="d-flex mb-2">
+              <h1 className="fw-bold d-flex flex-wrap dashboard-title justify-content-center align-items-center">
+                <span className="me-2">Personal</span>
+                <span className="me-2 custom-green-text">Budget</span>
+                <span className="">Manager</span>
+              </h1>
             </div>
-            <h5 className="custom-txt-color ms-2 mb-4 text-center">
+            <h6 className="custom-txt-color ms-2 mb-4 text-center">
               Take control of your finances
-            </h5>
+            </h6>
             <div className="d-grid d-flex flex-column justify-content-center align-items-center gap-2">
               <Button
                 className="btn-custom w-50 p-2"

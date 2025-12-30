@@ -41,7 +41,7 @@ function LoginPage() {
       }
     } catch (err) {
       console.error(err);
-      setError("Login fallito. Verifica username e password.");
+      setError("Login failed. Incorrect username or password.");
     }
   };
 
