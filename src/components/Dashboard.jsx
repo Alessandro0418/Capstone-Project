@@ -504,42 +504,69 @@ function Dashboard() {
                 {transazioniRecenti.map((t) => (
                   <li
                     key={t.id}
-                    className="list-group-item d-flex justify-content-between align-items-center"
+                    className="list-group-item d-flex align-items-center px-0"
                   >
-                    <div>
-                      <strong>{t.descrizione}</strong>
-                      <br />
-                      <small className="text-muted">
-                        {moment(t.data).format("DD/MM/YYYY")}
-                      </small>
-                      {t.categoria && (
-                        <span
-                          className="ms-2 badge rounded-pill"
-                          style={{
-                            backgroundColor: t.categoria.color || "#6c757d",
-                            color: "white",
-                          }}
-                        >
-                          {t.categoria.name}
-                        </span>
-                      )}
+                    {/* gruppo a sinistra con icona + descrizione*/}
+                    <div className="d-flex align-items-center flex-grow-1">
+                      <div
+                        className="me-3 d-flex align-items-center justify-content-center rounded-circle text-dark"
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          minWidth: "40px",
+                        }}
+                      >
+                        <i
+                          className={`bi ${t.icona || "bi-cash-stack"} fs-5`}
+                        ></i>
+                      </div>
+
+                      <div>
+                        <strong>{t.descrizione}</strong>
+                        <br />
+                        <small className="text-muted">
+                          {moment(t.data).format("DD/MM/YYYY")}
+                        </small>
+                        {t.categoria && (
+                          <span
+                            className="ms-2 badge rounded-pill"
+                            style={{
+                              backgroundColor: t.categoria.color || "#6c757d",
+                              color: "white",
+                            }}
+                          >
+                            {t.categoria.name}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <span
-                      className={
-                        t.expenses && t.expenses.includes("INCOME")
-                          ? "text-success"
-                          : "text-danger"
-                      }
-                    >
-                      €{t.importo.toFixed(2)}
-                    </span>
-                    <Button
-                      size="sm"
-                      onClick={() => handleDeleteTransazione(t.id)}
-                      className="ms-2 custom-red border-0 rounded-5"
-                    >
-                      <i className="bi bi-trash fs-6"></i>
-                    </Button>
+
+                    {/* gruppo a destra con importo + cestino */}
+                    <div className="d-flex align-items-center">
+                      <span
+                        className={`fw-bold ${
+                          t.expenses && t.expenses.includes("INCOME")
+                            ? "text-success"
+                            : "text-danger"
+                        }`}
+                      >
+                        €{t.importo.toFixed(2)}
+                      </span>
+                      <Button
+                        size="sm"
+                        onClick={() => handleDeleteTransazione(t.id)}
+                        className="ms-3 custom-red border-0 rounded-5"
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <i className="bi bi-trash fs-6"></i>
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>

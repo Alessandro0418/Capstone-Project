@@ -2,9 +2,29 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Form, Button, Alert } from "react-bootstrap";
 
+const AVAILABLE_ICONS = [
+  "bi-cart",
+  "bi-bag-heart",
+  "bi-car-front",
+  "bi-house",
+  "bi-gift",
+  "bi-cup-hot",
+  "bi-controller",
+  "bi-airplane",
+  "bi-hospital",
+  "bi-fuel-pump",
+  "bi-lightning",
+  "bi-water",
+  "bi-telephone",
+  "bi-mortarboard",
+  "bi-credit-card",
+  "bi-cash-coin",
+];
+
 function TransactionForm({ onTransactionAdded, categories }) {
   const [transactionData, setTransactionData] = useState({
     descrizione: "",
+    icona: "bi-cart",
     importo: "",
     data: new Date().toISOString().split("T")[0],
     categoriaId: "",
@@ -17,6 +37,10 @@ function TransactionForm({ onTransactionAdded, categories }) {
 
   const handleChange = (e) => {
     setTransactionData({ ...transactionData, [e.target.name]: e.target.value });
+  };
+
+  const handleIconSelect = (iconName) => {
+    setTransactionData({ ...transactionData, icona: iconName });
   };
 
   const handleSubmit = async (e) => {
@@ -79,6 +103,29 @@ function TransactionForm({ onTransactionAdded, categories }) {
           required
           placeholder="Coffee, Salary, Rent..."
         />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Select Icon</Form.Label>
+        <div
+          className="d-flex flex-wrap gap-2 p-2 border rounded bg-light"
+          style={{ maxHeight: "120px", overflowY: "auto" }}
+        >
+          {AVAILABLE_ICONS.map((icon) => (
+            <div
+              key={icon}
+              onClick={() => handleIconSelect(icon)}
+              className={`p-2 border-0 rounded cursor-pointer transition-all bg-dark ${
+                transactionData.icona === icon
+                  ? "bg-primary text-white border-primary shadow"
+                  : "bg-white text-dark hover-bg-light"
+              }`}
+              style={{ cursor: "pointer", fontSize: "1.2rem" }}
+            >
+              <i className={`bi ${icon}`}></i>
+            </div>
+          ))}
+        </div>
       </Form.Group>
 
       <Form.Group className="mb-3">
