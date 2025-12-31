@@ -6,6 +6,7 @@ import HomePage from "./components/HomePage";
 import { Container } from "react-bootstrap";
 import "./App.css";
 import MobileNavbar from "./components/MobileNavbar";
+import ChartsPage from "./components/ChartsPage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/Home" element={<HomePage />} />
+        <Route path="/charts" element={<ChartsPage />} />
       </Routes>
       <MobileNavbar />
     </BrowserRouter>

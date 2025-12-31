@@ -8,12 +8,6 @@ const MobileNavbar = () => {
   const location = useLocation();
   const [opacity, setOpacity] = useState(1);
 
-  const hideOnPath = ["/register", "/login", "/home", "/"];
-
-  if (hideOnPath.includes(location.pathname)) {
-    return null;
-  }
-
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -27,6 +21,12 @@ const MobileNavbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const hideOnPath = ["/register", "/login", "/home", "/"];
+
+  if (hideOnPath.includes(location.pathname.toLowerCase())) {
+    return null;
+  }
 
   return (
     <div
