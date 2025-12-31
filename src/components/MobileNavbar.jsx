@@ -8,14 +8,18 @@ const MobileNavbar = () => {
   const location = useLocation();
   const [opacity, setOpacity] = useState(1);
 
+  const hideOnPath = ["/register", "/login", "/home", "/"];
+
+  if (hideOnPath.includes(location.pathname)) {
+    return null;
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       const maxScroll = 200;
-      const minOpacity = 0.3;
-
-      const calculatedOpacity = 1 - scrollPosition / maxScroll;
-      const newOpacity = Math.max(minOpacity, calculatedOpacity);
+      let newOpacity = 1 - scrollPosition / maxScroll;
+      if (newOpacity < 0) newOpacity = 0;
 
       setOpacity(newOpacity);
     };
@@ -24,19 +28,16 @@ const MobileNavbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const hideOnPath = ["/register", "/login", "/Home"];
-
-  if (hideOnPath.includes(location.pathname)) {
-    return null;
-  }
-
   return (
     <div
       className="mobile-nav-container"
       style={{
-        backgroundColor: `rgba(27, 32, 37, ${opacity})`,
-        boxShadow: `0px 10px 20px rgba(0, 0, 0, ${opacity * 0.4})`,
-        border: `1px solid rgba(255, 255, 255, ${opacity * 0.1})`,
+        opacity: opacity,
+        pointerEvents: opacity <= 0 ? "none" : "auto",
+        backgroundColor: "#1b2025",
+        boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.2)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        transition: "opacity 0.1s ease-out",
       }}
     >
       {/* dashboard */}
@@ -44,12 +45,12 @@ const MobileNavbar = () => {
         className="mobile-nav-button"
         onClick={() => navigate("/dashboard")}
       >
-        <i class="bi bi-house-door fs-5"></i>
+        <i className="bi bi-house-door fs-5"></i>
       </button>
 
       {/* charts */}
       <button className="mobile-nav-button" onClick={() => navigate("/charts")}>
-        <i class="bi bi-graph-up fs-5"></i>
+        <i className="bi bi-graph-up fs-5"></i>
       </button>
 
       {/* notifications */}
@@ -57,12 +58,12 @@ const MobileNavbar = () => {
         className="mobile-nav-button"
         onClick={() => navigate("/notifications")}
       >
-        <i class="bi bi-bell fs-5"></i>
+        <i className="bi bi-bell fs-5"></i>
       </button>
 
       {/* AI */}
       <button className="mobile-nav-button" onClick={() => navigate("/ai")}>
-        <i class="bi bi-robot fs-5"></i>
+        <i className="bi bi-robot fs-5"></i>
       </button>
     </div>
   );

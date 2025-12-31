@@ -317,11 +317,11 @@ function Dashboard() {
             <span>Manager</span>
           </h1>
         </div>
-        <div>
+        <div className="pb-6 welcome-message">
           <p className="fw-bold">Welcome Back {userInfo.nome}...</p>
         </div>
         <Col>
-          <h2 className="custom-black-text">Dashboard</h2>
+          <h2 className="custom-black-text fw-bold">Dashboard</h2>
         </Col>
         {/*OffCanvas button*/}
         <Col className="d-flex justify-content-end">
