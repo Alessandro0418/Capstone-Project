@@ -17,17 +17,22 @@ import {
   Legend,
 } from "recharts";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = [
+  "#0088FE",
+  "#00C49F",
+  "#FFBB28",
+  "#FF8042",
+  "#AF19FF",
+  "#FF4560",
+];
 
 export default function ChartsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // dati grafici
-  const [monthlyTrend, setMonthlyTrend] = useState([]);
+  const [yearlyTrend, setYearlyTrend] = useState([]);
   const [categoryStats, setCategoryStats] = useState([]);
 
-  // stato filtri
   const [mese, setMese] = useState(new Date().getMonth() + 1);
   const [anno, setAnno] = useState(new Date().getFullYear());
 
@@ -41,39 +46,37 @@ export default function ChartsPage() {
         params: { mese, anno },
       };
 
-      // dati per categoria
-      const catRes = await axios.get(
-        `http://localhost:8080/api/dashboard/per-categoria`,
-        config
-      );
-
-      const formattedCats = catRes.data
-        .filter((item) => item.expenses && item.expenses.includes("EXPENSE"))
-        .map((item) => ({
-          name: item.categoriaNome || "Altro",
-          value: item.totale,
-        }));
-      setCategoryStats(formattedCats);
-
-      // riepilogo mensile
-      const riepilogoRes = await axios.get(
-        `http://localhost:8080/api/dashboard/riepilogo-mensile`,
-        config
-      );
-
-      setMonthlyTrend([
-        {
-          name: moment()
-            .month(mese - 1)
-            .format("MMM"),
-          income: riepilogoRes.data.entrateTotali,
-          expenses: riepilogoRes.data.usciteTotali,
-        },
+      const [catRes, riepilogoRes] = await Promise.all([
+        axios.get(`http://localhost:8080/api/dashboard/per-categoria`, config),
+        axios.get(
+          `http://localhost:8080/api/dashboard/riepilogo-mensile`,
+          config
+        ),
       ]);
 
+      const formattedCats = catRes.data.map((item) => ({
+        name: item.categoria || "Senza Nome",
+        value: Math.abs(parseFloat(item.totale)) || 0,
+      }));
+
+      setCategoryStats(formattedCats);
+
+      const fullYearData = Array.from({ length: 12 }, (_, i) => {
+        const monthName = moment().month(i).format("MMM");
+        if (i + 1 === parseInt(mese)) {
+          return {
+            name: monthName,
+            income: riepilogoRes.data.entrateTotali || 0,
+            expenses: riepilogoRes.data.usciteTotali || 0,
+          };
+        }
+        return { name: monthName, income: 0, expenses: 0 };
+      });
+
+      setYearlyTrend(fullYearData);
       setError(null);
     } catch (err) {
-      console.error("Errore nel caricamento dei grafici:", err);
+      console.error("Errore API:", err);
       setError("Errore nel caricamento dei dati.");
     } finally {
       setLoading(false);
@@ -92,102 +95,61 @@ export default function ChartsPage() {
     );
   }
 
-  if (error) {
-    return (
-      <Container className="p-4 text-center">
-        <p className="text-danger">{error}</p>
-      </Container>
-    );
-  }
-
   return (
-    <Container fluid className="p-4 bg-light min-vh-100 mb-5">
+    <Container fluid className="p-4 bg-light min-vh-100">
       <h2 className="fw-bold mb-4 text-center pb-7 welcome-message text-center">
-        Financial Analytics
+        Financial Analytics {anno}
       </h2>
 
-      {/* sezione fltri */}
-      <Row className="mb-4 justify-content-center">
-        <Col xs={6} md={2}>
-          <Form.Group>
-            <Form.Label className="small fw-bold">Month</Form.Label>
-            <Form.Control
-              as="select"
-              value={mese}
-              onChange={(e) => setMese(parseInt(e.target.value))}
-            >
-              {[...Array(12).keys()].map((i) => (
-                <option key={i + 1} value={i + 1}>
-                  {moment().month(i).format("MMMM")}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Col>
-        <Col xs={6} md={2}>
-          <Form.Group>
-            <Form.Label className="small fw-bold">Year</Form.Label>
-            <Form.Control
-              as="select"
-              value={anno}
-              onChange={(e) => setAnno(parseInt(e.target.value))}
-            >
-              {[2023, 2024, 2025].map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </Form.Control>
-          </Form.Group>
-        </Col>
-      </Row>
-
       <Row className="g-4">
-        {/* grafico ad area */}
         <Col xs={12} lg={8}>
           <Card
             className="p-3 shadow-sm border-0"
-            style={{ backgroundColor: "#1b2025", color: "white" }}
+            style={{ backgroundColor: "#eaeaebff", color: "black" }}
           >
-            <Card.Title className="mb-4">
-              Income vs Expenses (
-              {moment()
-                .month(mese - 1)
-                .format("MMMM")}
-              )
+            <Card.Title className="mb-4 text-center">
+              Annual Income/Expenses Trend
             </Card.Title>
-            <div style={{ width: "100%", height: 300 }}>
+            <div style={{ width: "100%", height: 350 }}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={monthlyTrend}>
+                <AreaChart data={yearlyTrend}>
+                  <defs>
+                    <linearGradient id="colorInc" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00C49F" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#00C49F" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="colorExp" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#ff4d4d" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#ff4d4d" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
-                    stroke="#444"
+                    stroke="#333"
                     vertical={false}
                   />
                   <XAxis dataKey="name" stroke="#888" />
                   <YAxis stroke="#888" />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1b2025",
+                      backgroundColor: "#eaeaebff",
                       border: "1px solid #444",
-                      color: "#fff",
                     }}
                   />
+                  <Legend />
                   <Area
                     type="monotone"
                     dataKey="income"
                     stroke="#00C49F"
-                    fill="#00C49F"
-                    fillOpacity={0.3}
-                    name="Income"
+                    fill="url(#colorInc)"
+                    name="Entrate"
                   />
                   <Area
                     type="monotone"
                     dataKey="expenses"
                     stroke="#ff4d4d"
-                    fill="#ff4d4d"
-                    fillOpacity={0.3}
-                    name="Expenses"
+                    fill="url(#colorExp)"
+                    name="Uscite"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -195,22 +157,24 @@ export default function ChartsPage() {
           </Card>
         </Col>
 
-        {/* chart pie per spese e categoria */}
         <Col xs={12} lg={4}>
           <Card
             className="p-3 shadow-sm border-0"
-            style={{ backgroundColor: "#1b2025", color: "white" }}
+            style={{ backgroundColor: "#eaeaebff", color: "black" }}
           >
-            <Card.Title className="mb-4">Expenses by Category</Card.Title>
-            <div style={{ width: "100%", height: 300 }}>
+            <Card.Title className="mb-4 text-center">
+              Expenses by Category
+            </Card.Title>
+            <div style={{ width: "100%", height: 350 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={categoryStats}
                     innerRadius={60}
-                    outerRadius={80}
+                    outerRadius={90}
                     paddingAngle={5}
                     dataKey="value"
+                    nameKey="name"
                   >
                     {categoryStats.map((entry, index) => (
                       <Cell
@@ -225,8 +189,8 @@ export default function ChartsPage() {
               </ResponsiveContainer>
             </div>
             {categoryStats.length === 0 && (
-              <p className="text-center text-muted mt-2 small">
-                No expense data for this period
+              <p className="text-center text-muted small mt-2">
+                Nessun dato per questo mese
               </p>
             )}
           </Card>
