@@ -7,6 +7,7 @@ import { Container } from "react-bootstrap";
 import "./App.css";
 import MobileNavbar from "./components/MobileNavbar";
 import ChartsPage from "./components/ChartsPage";
+import NotificationPage from "./components/NotificationPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/Home" element={<HomePage />} />
         <Route path="/charts" element={<ChartsPage />} />
+        <Route path="/notifications" element={<NotificationPage />} />
       </Routes>
       <MobileNavbar />
     </BrowserRouter>
