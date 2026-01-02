@@ -1,4 +1,4 @@
-.mobile-nav-container {
+/* .mobile-nav-container {
   display: flex;
   width: 280px;
   height: 60px;
@@ -36,7 +36,55 @@
 
 .mobile-nav-icon {
   font-size: 24px;
+} */
+
+/*light mode*/
+.mobile-nav-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 15px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  background-color: #ffffff;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #dee2e6;
+  transition: background-color 0.3s ease, border-color 0.3s ease,
+    box-shadow 0.3s ease, opacity 0.1s ease-out;
 }
+
+.mobile-nav-button {
+  background: none;
+  border: none;
+  color: #1b2025;
+  font-size: 1.2rem;
+  padding: 6.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease, transform 0.2s;
+}
+
+.mobile-nav-button:hover {
+  transform: scale(1.1);
+}
+
+/* dark mode */
+
+body.dark-mode .mobile-nav-container {
+  background-color: #1b2025 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.dark-mode .mobile-nav-button {
+  color: #f8f9fa !important;
+}
+
+/* ------------- */
 
 /* custom classes */
 .pb-6 {

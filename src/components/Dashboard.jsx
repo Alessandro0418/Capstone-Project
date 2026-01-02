@@ -321,7 +321,9 @@ function Dashboard() {
           <p className="fw-bold">Welcome Back {userInfo.nome}...</p>
         </div>
         <Col>
-          <h2 className="custom-black-text fw-bold">Dashboard</h2>
+          <h2 className="custom-black-text fw-bold dashboard-h2-color">
+            Dashboard
+          </h2>
         </Col>
         {/*OffCanvas button*/}
         <Col className="d-flex justify-content-end">
@@ -517,7 +519,9 @@ function Dashboard() {
                         }}
                       >
                         <i
-                          className={`bi ${t.icona || "bi-cash-stack"} fs-5`}
+                          className={`bi ${
+                            t.icona || "bi-cash-stack"
+                          } fs-5 dashboard-h1-color`}
                         ></i>
                       </div>
 

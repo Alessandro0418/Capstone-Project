@@ -34,10 +34,6 @@ const MobileNavbar = () => {
       style={{
         opacity: opacity,
         pointerEvents: opacity <= 0 ? "none" : "auto",
-        backgroundColor: "#1b2025",
-        boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.2)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        transition: "opacity 0.1s ease-out",
       }}
     >
       {/* dashboard */}
@@ -45,12 +41,12 @@ const MobileNavbar = () => {
         className="mobile-nav-button"
         onClick={() => navigate("/dashboard")}
       >
-        <i className="bi bi-house-door fs-5"></i>
+        <i className="bi bi-house-door fs-5 mobile-nav-button"></i>
       </button>
 
       {/* charts */}
       <button className="mobile-nav-button" onClick={() => navigate("/charts")}>
-        <i className="bi bi-graph-up fs-5"></i>
+        <i className="bi bi-graph-up fs-5 mobile-nav-button"></i>
       </button>
 
       {/* notifications */}
@@ -58,12 +54,12 @@ const MobileNavbar = () => {
         className="mobile-nav-button"
         onClick={() => navigate("/notifications")}
       >
-        <i className="bi bi-bell fs-5"></i>
+        <i className="bi bi-bell fs-5 mobile-nav-button"></i>
       </button>
 
       {/* AI */}
       <button className="mobile-nav-button" onClick={() => navigate("/AI")}>
-        <i className="bi bi-robot fs-5"></i>
+        <i className="bi bi-robot fs-5 mobile-nav-button"></i>
       </button>
     </div>
   );
