@@ -29,6 +29,7 @@ function TransactionForm({ onTransactionAdded, categories }) {
     data: new Date().toISOString().split("T")[0],
     categoriaId: "",
     type: `EXPENSE`,
+    ricorrente: false,
   });
 
   const [error, setError] = useState(null);
@@ -67,14 +68,20 @@ function TransactionForm({ onTransactionAdded, categories }) {
           Authorization: `Bearer ${token}`,
         },
       });
+
       setSuccess("Transaction successfully added!");
+
+      // reset del form
       setTransactionData({
         descrizione: "",
+        icona: "bi-cart",
         importo: "",
         data: new Date().toISOString().split("T")[0],
         categoriaId: "",
         type: `EXPENSE`,
+        ricorrente: false,
       });
+
       setTimeout(() => {
         if (onTransactionAdded) {
           onTransactionAdded();
@@ -88,6 +95,7 @@ function TransactionForm({ onTransactionAdded, categories }) {
       setError("Errore nell'aggiunta della transazione. Riprova.");
     }
   };
+
   return (
     <Form onSubmit={handleSubmit} className="p-3">
       {error && <Alert variant="danger">{error}</Alert>}
@@ -115,10 +123,10 @@ function TransactionForm({ onTransactionAdded, categories }) {
             <div
               key={icon}
               onClick={() => handleIconSelect(icon)}
-              className={`p-2 border-0 rounded cursor-pointer transition-all bg-dark ${
+              className={`p-2 border-0 rounded cursor-pointer transition-all ${
                 transactionData.icona === icon
-                  ? "bg-primary text-white border-primary shadow"
-                  : "bg-white text-dark hover-bg-light"
+                  ? "bg-dark text-white shadow"
+                  : "bg-white text-dark border"
               }`}
               style={{ cursor: "pointer", fontSize: "1.2rem" }}
             >
@@ -139,6 +147,25 @@ function TransactionForm({ onTransactionAdded, categories }) {
           required
           placeholder="10.50"
         />
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="formRicorrente">
+        <Form.Check
+          type="checkbox"
+          label="Set as recurring transaction"
+          checked={transactionData.ricorrente}
+          onChange={(e) =>
+            setTransactionData({
+              ...transactionData,
+              ricorrente: e.target.checked,
+            })
+          }
+          className="text-muted"
+          style={{ fontSize: "0.9rem" }}
+        />
+        <Form.Text className="text-muted">
+          (This will appear in the Deadlines notifications section)
+        </Form.Text>
       </Form.Group>
 
       <Form.Group className="mb-3">
@@ -170,7 +197,7 @@ function TransactionForm({ onTransactionAdded, categories }) {
         </Form.Control>
       </Form.Group>
 
-      <Form.Group className="mb-3">
+      <Form.Group className="mb-4">
         <Form.Label>Transaction Type</Form.Label>
         <Form.Control
           as="select"
@@ -184,7 +211,7 @@ function TransactionForm({ onTransactionAdded, categories }) {
         </Form.Control>
       </Form.Group>
 
-      <Button type="submit" className="btn-custom3">
+      <Button type="submit" className="btn-custom3 w-100">
         Add Transaction
       </Button>
     </Form>

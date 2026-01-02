@@ -62,7 +62,7 @@ const MobileNavbar = () => {
       </button>
 
       {/* AI */}
-      <button className="mobile-nav-button" onClick={() => navigate("/ai")}>
+      <button className="mobile-nav-button" onClick={() => navigate("/AI")}>
         <i className="bi bi-robot fs-5"></i>
       </button>
     </div>

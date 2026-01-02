@@ -8,6 +8,7 @@ import "./App.css";
 import MobileNavbar from "./components/MobileNavbar";
 import ChartsPage from "./components/ChartsPage";
 import NotificationPage from "./components/NotificationPage";
+import AiPage from "./components/AIPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/Home" element={<HomePage />} />
         <Route path="/charts" element={<ChartsPage />} />
         <Route path="/notifications" element={<NotificationPage />} />
+        <Route path="/AI" element={<AiPage />} />
       </Routes>
       <MobileNavbar />
     </BrowserRouter>
