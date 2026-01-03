@@ -197,6 +197,47 @@ function Dashboard() {
     handleCloseCategoryModal();
   };
 
+  // upload profile pic
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert("File too large. Max 2MB.");
+      return;
+    }
+
+    const data = new FormData();
+    data.append("file", file);
+
+    try {
+      setIsUploading(true);
+
+      const token = localStorage.getItem("token");
+
+      const response = await axios.post(
+        "http://localhost:8080/users/me/avatar",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setUserInfo(response.data);
+      alert("Profile picture updated successfully!");
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Error uploading image. Make sure you are logged in.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   //eliminazione transazioni e categorie
   const handleDeleteTransazione = async (id) => {
     if (!window.confirm("Do you want to delete this transaction?")) {
@@ -325,53 +366,103 @@ function Dashboard() {
             Dashboard
           </h2>
         </Col>
+
         {/*OffCanvas button*/}
         <Col className="d-flex justify-content-end">
           <Button onClick={handleShow} className="btn-custom2 me-1">
             <i className="bi bi-gear-fill fs-4 text-black"></i>
           </Button>
         </Col>
-        <Offcanvas show={show} onHide={handleClose} placement="end">
+        <Offcanvas
+          show={show}
+          onHide={handleClose}
+          placement="end"
+          className="dark-mode-offcanvas"
+        >
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Settings</Offcanvas.Title>
+            <Offcanvas.Title className="dashboard-h4-color">
+              Settings
+            </Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
             {userInfo ? (
-              <div>
-                <h4 className="mb-3">User Info</h4>
-                {userInfo.profilePictureUrl && (
-                  <div className="mb-3 text-center">
+              <div className="text-center">
+                <h4 className="mb-4 dashboard-h4-color">User Profile</h4>
+
+                {/* avatar interattivo */}
+                <div className="text-center mb-4">
+                  <div className="position-relative d-inline-block">
+                    {/* profile pic */}
                     <img
-                      src={userInfo.profilePictureUrl}
-                      alt="Foto Profilo"
-                      className="rounded-circle"
+                      src={userInfo.avatar || "https://via.placeholder.com/150"}
+                      alt="Avatar"
+                      className="rounded-circle shadow"
                       style={{
-                        width: "100px",
-                        height: "100px",
+                        width: "110px",
+                        height: "110px",
                         objectFit: "cover",
+                        border: "3px solid #000000ff",
+                        cursor: "pointer",
+                        opacity: isUploading ? 0.5 : 1,
                       }}
+                      onClick={() =>
+                        document.getElementById("avatarInput").click()
+                      }
+                    />
+
+                    {/* overlay icona fotocamera */}
+                    <div
+                      className="position-absolute bottom-0 end-0 bg-dark rounded-circle d-flex align-items-center justify-content-center"
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        border: "2px solid white",
+                        cursor: "pointer",
+                      }}
+                      onClick={() =>
+                        document.getElementById("avatarInput").click()
+                      }
+                    >
+                      <i
+                        className={`bi ${
+                          isUploading ? "bi-hourglass-split" : "bi-camera-fill"
+                        } text-white small`}
+                      ></i>
+                    </div>
+
+                    {/* input file nascosto */}
+                    <input
+                      type="file"
+                      id="avatarInput"
+                      hidden
+                      accept="image/*"
+                      onChange={handleAvatarChange}
                     />
                   </div>
-                )}
-                <p>
-                  <img
-                    className="rounded w-25"
-                    src={userInfo.avatar}
-                    alt="user-avatar"
-                  />
-                </p>
-                <p>
-                  <strong>Name:</strong> {userInfo.nome}
-                </p>
-                <p>
-                  <strong>Surname:</strong> {userInfo.cognome}
-                </p>
-                <p>
-                  <strong>Email:</strong> {userInfo.email}
-                </p>
-                <p>
-                  <strong>Username:</strong> {userInfo.username}
-                </p>
+                  {isUploading && (
+                    <div className="small text-success mt-1">Uploading...</div>
+                  )}
+                </div>
+
+                {/* user info */}
+                <div className="text-start mt-3">
+                  <p className="mb-2">
+                    <strong className="text-dark">Name:</strong> {userInfo.nome}
+                  </p>
+                  <p className="mb-2">
+                    <strong className="text-dark">Surname:</strong>{" "}
+                    {userInfo.cognome}
+                  </p>
+                  <p className="mb-2">
+                    <strong className="text-dark">Email:</strong>{" "}
+                    {userInfo.email}
+                  </p>
+                  <p className="mb-3">
+                    <strong className="text-dark">Username: </strong>
+                    {userInfo.username}
+                  </p>
+                </div>
+
                 {/* <hr />
                 <div className="d-flex justify-content-between align-items-center mb-3">
                   <span>
@@ -400,17 +491,22 @@ function Dashboard() {
                       </svg>
                     </span>
                   </label>
-                </div>
-                <hr /> */}
-                <Button
-                  onClick={handleLogout}
-                  className="w-100 mt-3 btn-logout"
-                >
+                </div> */}
+
+                <hr className="my-4" />
+
+                <Button onClick={handleLogout} className="w-100 btn-logout">
                   <i className="bi bi-box-arrow-right me-2"></i> Logout
                 </Button>
               </div>
             ) : (
-              <p>Caricamento informazioni utente...</p>
+              <div className="text-center py-5">
+                <div
+                  className="spinner-border text-success"
+                  role="status"
+                ></div>
+                <p className="mt-2 text-muted">Loading...</p>
+              </div>
             )}
           </Offcanvas.Body>
         </Offcanvas>

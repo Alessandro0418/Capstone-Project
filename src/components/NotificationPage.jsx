@@ -155,7 +155,7 @@ export default function NotificationPage() {
                         className="p-0 text-success text-decoration-none small fw-bold"
                         onClick={() => markAsRead(n.id)}
                       >
-                        Segna come letta
+                        Mark as Read
                       </Button>
                     )}
                   </div>

@@ -24,6 +24,31 @@ function RegistrationPage() {
     }));
   };
 
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", "tuo_preset_cloudinary");
+
+    try {
+      setUploading(true);
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/tuo_cloud_name/image/upload",
+        data
+      );
+
+      setFormData({ ...formData, avatar: res.data.secure_url });
+      setUploading(false);
+    } catch (err) {
+      console.error("Upload error", err);
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -110,14 +135,20 @@ function RegistrationPage() {
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="formAvatar">
+                <Form.Label className="text-muted small">
+                  Profile Picture (Optional)
+                </Form.Label>
                 <Form.Control
-                  className="underline-input custom-placeholder"
-                  type="text"
-                  placeholder="Avatar URL (Optional)"
-                  name="avatar"
-                  value={formData.avatar}
-                  onChange={handleChange}
+                  className="underline-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
                 />
+                {uploading && (
+                  <div className="small text-primary mt-1">
+                    Uploading image...
+                  </div>
+                )}
               </Form.Group>
 
               <div className="d-grid d-flex justify-content-center align-items-center">
